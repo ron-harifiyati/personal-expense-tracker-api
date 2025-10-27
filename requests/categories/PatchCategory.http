@@ -1,0 +1,9 @@
+PATCH http://localhost:3000/categories/0b0734b7-2371-4033-900c-e23c735e862a
+Content-Type: application/json
+
+
+{
+    "title": "Stipend",
+    "type": "expense",
+    "imageTitle": "Something"
+}
