@@ -20,7 +20,7 @@ const Account = sequelize.define('Account', {
         defaultValue: 0,
         validate: {
             isDecimal: true,
-            min: 0.01
+            min: 0.00
         }
     },
     imageTitle: {
