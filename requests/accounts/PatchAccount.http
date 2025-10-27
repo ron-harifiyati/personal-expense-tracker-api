@@ -1,0 +1,7 @@
+PATCH http://localhost:3000/accounts/926facbe-808b-42a9-be4f-9b6050d0ec8c
+
+{
+    "title": "Change",
+    "amount": 20,
+    "imageTitle": "somethin"
+}
