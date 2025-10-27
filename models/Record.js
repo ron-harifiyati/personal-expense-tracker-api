@@ -24,7 +24,7 @@ const Record = sequelize.define('Record', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    time: {
+    date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
@@ -34,7 +34,7 @@ const Record = sequelize.define('Record', {
         type: DataTypes.UUID,
         allowNull: true
     },
-    receivingAccountId: {
+    toAccountId: {
         type: DataTypes.UUID,
         allowNull: true
     },
