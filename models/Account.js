@@ -29,4 +29,26 @@ const Account = sequelize.define('Account', {
     }
 });
 
+Account.prototype.transfer = async function (amount, receivingAccount) {
+    if (this.balance < amount) {
+        throw new Error(`Ensufficient funds in ${this.title}, Required ${amount}, Available ${this.balance}`);
+    };
+
+    this.balance = (parseFloat(this.balance) - amount).toFixed(2);
+    receivingAccount.balance = (parseFloat(receivingAccount.balance) - acount).toFixed(2);
+
+    await Promise.all([this.save(), receivingAccount.save()])
+};
+
+Account.prototype.spend = async function (amount) {
+    if (this.balance < amount) {
+        throw new Error(`Insufficient funds in ${this.title} for spending ${amount}.`)
+    }
+
+    this.balance = (parseInt(this.balance) - amount).toFixed(2)
+    await this.save()
+};
+
+Account.prototype.receive = async function
+
 module.exports = Account;
