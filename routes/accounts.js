@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 });
 
 //Update an account
-router.put('/:id', async (req, res) => {
+router.patch('/:id', async (req, res) => {
     const { title, amount, imageTitle } = req.body;
     const account = await Account.findOne({ where: {id: req.params.id}})
 
@@ -39,11 +39,11 @@ router.put('/:id', async (req, res) => {
 
 //Delete an account
 router.delete('/:id', async (req, res) => {
-    const todo = Todo.findOne({where: {id: req.params.id}});
+    const account = await Account.findOne({where: {id: req.params.id}});
 
     if (!account) return res.status(404).json({error: 'Account not found'});
 
-    await todo.destroy();
+    await account.destroy();
     res.json({message: 'Deleted account successfully'})
 });
 

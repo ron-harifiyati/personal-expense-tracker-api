@@ -1,0 +1,2 @@
+DELETE http://localhost:3000/accounts/f3c589ba-9098-4a1c-8787-d147c2209cd9
+Content-Type: application/json
