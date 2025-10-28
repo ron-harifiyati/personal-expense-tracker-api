@@ -1,0 +1,10 @@
+POST http://localhost:3000/records
+Content-Type: application/json
+
+{
+    "type": "transfer",
+    "amountString": "1",
+    "fromAccountId": "c8b76ca2-bbb9-41c0-8a08-68d4574a2c43",
+    "toAccountId": "d98cc8f6-bf5f-49ef-931c-a9233daf4a5e",
+    "notes": "Trial"
+}

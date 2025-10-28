@@ -1,0 +1,2 @@
+DELETE http://localhost:3000/records/7bf5bbb7-491e-4e48-b8d7-ae208005342d
+Content-Type: application/json

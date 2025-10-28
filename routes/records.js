@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
 
         const category = await Category.findByPk(categoryId);
         const fromAccount = await Account.findByPk(fromAccountId);
-        const toAccount = await Account.findByPk(toAccountId)
+        const toAccount = await Account.findByPk(toAccountId);
 
         if (!amountString) return res.status(400).json({ success: false, message: 'Amount is required.' });
 
@@ -50,6 +50,77 @@ router.post('/', async (req, res) => {
         }
 
     } catch (error) {
+        res.status(500).json({ success: false, message: 'An unexpected server error occurred.' });
+    }
+})
+
+router.patch('/:id', async (req, res) => {
+    const { type, amountString, fromAccountId, toAccountId, categoryId, notes } = req.body;
+    const id = req.params.id
+
+
+    try {
+        let result;
+
+        const existingRecord = await Record.findByPk(id);
+        if (!existingRecord) return res.status(404).json({ success: false, message: 'Record not found' });
+
+        await TransactionService.undo(id)
+
+        const category = await Category.findByPk(categoryId);
+        const fromAccount = await Account.findByPk(fromAccountId);
+        const toAccount = await Account.findByPk(toAccountId);
+
+        if (!amountString) return res.status(400).json({ success: false, message: 'Amount is required.' });
+
+        switch (type.toLowerCase()) {
+            case 'expense':
+                if (!fromAccount || !category) return res.status(400).json({ success: false, message: 'Source Account and Category required for Expense.' });
+                result = await TransactionService.createExpense({ id, fromAccount, category, amountString, notes });
+                break;
+
+            case 'income':
+                if (!toAccount || !category) return res.status(400).json({ success: false, message: 'Destination Account and Category required for Income.' });
+                result = await TransactionService.createIncome({ id, toAccount, category, amountString, notes });
+                break;
+
+            case 'transfer':
+                if (!fromAccount || !toAccount) return res.status(400).json({ success: false, message: 'Source and Destination Accounts required for Transfer.' });
+                result = await TransactionService.createTransfer({ id, fromAccount, toAccount, amountString, notes });
+                break;
+
+            default:
+                return res.status(400).json({ success: false, message: 'Invalid transaction type.' });
+        }
+
+        if (result.success) {
+            res.json({ success: true, message: 'Successfully edited record' });
+        } else {
+            // This handles insufficient funds, validation errors, etc., thrown by the service
+            res.status(400).json(result);
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'An unexpected server error occurred.' });
+    }
+})
+
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id
+
+    try {
+        const result = await TransactionService.delete(id)
+
+        if (result.success) {
+            res.json({ success: true, message: 'Successfully deleted record' });
+        } else {
+            res.status(400).json(result);
+        }
+
+    } catch (error) {
+
+            console.log(error)
         res.status(500).json({ success: false, message: 'An unexpected server error occurred.' });
     }
 })

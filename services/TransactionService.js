@@ -11,12 +11,13 @@ const parseAmount = (amountString) => {
 };
 
 class TransactionService {
-    static async createExpense({ fromAccount, category, amountString, notes = "" }) {
+    static async createExpense({ id, fromAccount, category, amountString, notes = "" }) {
         try {
             const amount = parseAmount(amountString);
             await fromAccount.spend(amount);
 
             const record = await Record.create({
+                id,
                 type: 'expense',
                 amount,
                 notes,
@@ -30,12 +31,13 @@ class TransactionService {
         }
     };
 
-    static async createIncome({ toAccount, category, amountString, notes = ""}) {
+    static async createIncome({ id, toAccount, category, amountString, notes = ""}) {
         try {
             const amount = parseAmount(amountString);
             await toAccount.receive(amount);
-
+            
             const record = await Record.create({
+                id,
                 type: 'income',
                 amount,
                 notes,
@@ -45,11 +47,12 @@ class TransactionService {
 
             return { success: true, message: 'Income recorded and account updated', record}
         } catch (error) {
+            console.log(error)
             return { success: false, error: error.message }
         }
     };
 
-    static async createTransfer({ fromAccount, toAccount, amountString, notes = "" }) {
+    static async createTransfer({ id, fromAccount, toAccount, amountString, notes = "" }) {
         try {
             if (fromAccount.id === toAccount.id) {
                 throw new Error(`Cannot transfer to the same account`)
@@ -59,6 +62,7 @@ class TransactionService {
             await fromAccount.transfer(amount, toAccount);
 
             const record = await Record.create({
+                id,
                 type: 'transfer',
                 amount,
                 notes,
@@ -68,6 +72,84 @@ class TransactionService {
 
             return {success: true, message: 'Transfer recorded and accounts updated', record}
         } catch (error) {
+            return { success: false, error: error.message }
+        }
+    }
+
+    static async undo( id ) {
+        
+        const record = await Record.findByPk(id);
+        if (!record) return { status: 404, success: false, error: 'Record not found' };
+        const oldFromAccount = await Account.findOne({ where: { id: record.accountId }});
+        const oldToAccount = await Account.findOne({ where: { id: record.toAccountId }});
+        
+        //Revert the changes that were made by the record
+        try {
+            switch (record.type.toLowerCase()) {
+                case 'income':
+                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
+                    await oldToAccount.save();
+                    break;
+
+                case 'expense':
+                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
+                    await oldFromAccount.save();
+                    break;
+
+                case 'transfer':
+                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
+                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
+
+                    await Promise.all([oldFromAccount.save(), oldToAccount.save()])
+                    break;
+
+                default: 'default'
+                    return { success: false, message: 'Invalid transaction type'}
+            };
+            await record.destroy();
+            return { success: true}
+
+        } catch (error) {
+            return { success: false, error: error.message }
+        }
+    }
+
+    static async delete( id ) {
+        
+        const record = await Record.findByPk(id);
+        if (!record) return { status: 404, success: false, error: 'Record not found' };
+        const oldFromAccount = await Account.findOne({ where: { id: record.accountId }});
+        const oldToAccount = await Account.findOne({ where: { id: record.toAccountId }});
+        
+        //Revert the changes that were made by the record
+        try {
+            switch (record.type.toLowerCase()) {
+                case 'income':
+                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
+                    await oldToAccount.save();
+                    break;
+
+                case 'expense':
+                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
+                    await oldFromAccount.save();
+                    break;
+
+                case 'transfer':
+                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
+                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
+
+                    await Promise.all([oldFromAccount.save(), oldToAccount.save()])
+                    break;
+
+                default: 'default'
+                    return { success: false, message: 'Invalid transaction type'}
+            };
+
+            await record.destroy();
+            return { success: true}
+
+        } catch (error) {
+            console.log(error)
             return { success: false, error: error.message }
         }
     }

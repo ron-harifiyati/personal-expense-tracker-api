@@ -35,7 +35,7 @@ Account.prototype.transfer = async function (amount, toAccount) {
     };
 
     this.amount = (parseFloat(this.amount) - amount).toFixed(2);
-    toAccount.amount = (parseFloat(toAccount.amount) - amount).toFixed(2);
+    toAccount.amount = (parseFloat(toAccount.amount) + amount).toFixed(2);
 
     await Promise.all([this.save(), toAccount.save()])
 };
