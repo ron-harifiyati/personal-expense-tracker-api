@@ -5,8 +5,8 @@ const Account = require('../models/Account');
 const Category = require('../models/Category');
 const Record = require('../models/Record');
 
-router.get('/', (req, res) => {
-    const records = Record.findAll();
+router.get('/', async (req, res) => {
+    const records = await Record.findAll();
     res.json(records)
 });
 
