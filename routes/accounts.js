@@ -29,10 +29,10 @@ router.patch('/:id', async (req, res) => {
 
     if (!account) return res.status(404).json({error: 'Account not found'});
 
-    account.title = title ?? account.title
-    account.amount = amount ?? account.amount
-    account.imageTitle = imageTitle ?? account.imageTitle
-    await account.save()
+    account.title = title ?? account.title;
+    account.amount = amount ?? account.amount;
+    account.imageTitle = imageTitle ?? account.imageTitle;
+    await account.save();
 
     res.json(account)
 });

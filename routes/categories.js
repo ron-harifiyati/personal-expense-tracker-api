@@ -22,13 +22,14 @@ router.post('/', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
     const { title, type, imageTitle } = req.body;
-    let category = Category.findOne({where: {id: req.params.id}});
-    if (!category) return res.status(400).json({message: 'Category not found'})
+    let category = await Category.findOne({where: {id: req.params.id}});
 
-    category.title = title ?? category.title
-    category.type = type ?? category.type
-    category.imageName = imageTitle ?? category.imageTitle
-    await category.save
+    if (!category) return res.status(400).json({message: 'Category not found'});
+
+    category.title = title ?? category.title;
+    category.type = type ?? category.type;
+    category.imageName = imageTitle ?? category.imageTitle;
+    await category.save();
 
     res.json({category})
 });
