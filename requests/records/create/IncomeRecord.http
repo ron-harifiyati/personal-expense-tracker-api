@@ -1,0 +1,10 @@
+POST http://localhost:3000/records
+Content-Type: application/json
+
+{
+    "type": "income",
+    "amountString": "10",
+    "toAccountId": "c8b76ca2-bbb9-41c0-8a08-68d4574a2c43",
+    "categoryId": "384b9a31-e456-43fc-bdf0-27d87d2d32d4",
+    "notes": "Trial"
+}

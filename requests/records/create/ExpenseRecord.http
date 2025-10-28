@@ -1,0 +1,10 @@
+POST http://localhost:3000/records
+Content-Type: application/json
+
+{
+    "type": "expense",
+    "amountString": "10",
+    "fromAccountId": "d98cc8f6-bf5f-49ef-931c-a9233daf4a5e",
+    "categoryId": "4b06b724-66d4-44da-89ca-bb1e3d478e31",
+    "notes": "Trial"
+}

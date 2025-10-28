@@ -4,5 +4,5 @@ Content-Type: application/json
 {
     "title": "Stipend",
     "type": "income",
-    "imageTitle": "Something"
+    "imageTitle": "bank.png"
 }

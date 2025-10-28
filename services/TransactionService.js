@@ -16,7 +16,7 @@ class TransactionService {
             const amount = parseAmount(amountString);
             await fromAccount.spend(amount);
 
-            const record = Record.create({
+            const record = await Record.create({
                 type: 'expense',
                 amount,
                 notes,
@@ -30,12 +30,12 @@ class TransactionService {
         }
     };
 
-    static async createIncome({ category, toAccount, amountString, notes = ""}) {
+    static async createIncome({ toAccount, category, amountString, notes = ""}) {
         try {
             const amount = parseAmount(amountString);
             await toAccount.receive(amount);
 
-            const record = Record.create({
+            const record = await Record.create({
                 type: 'income',
                 amount,
                 notes,
@@ -58,7 +58,7 @@ class TransactionService {
             const amount = parseAmount(amountString);
             await fromAccount.transfer(amount, toAccount);
 
-            const record = Record.create({
+            const record = await Record.create({
                 type: 'transfer',
                 amount,
                 notes,
