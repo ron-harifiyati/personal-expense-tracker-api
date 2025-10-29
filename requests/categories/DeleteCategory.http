@@ -1,2 +1,2 @@
-DELETE http://localhost:3000/categories/0b0734b7-2371-4033-900c-e23c735e862a
+DELETE http://localhost:3000/categories/3c467b2c-d8d9-495a-b652-5b3899c6e57d
 Content-Type: application/json
