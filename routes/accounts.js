@@ -1,6 +1,7 @@
 const express = require('express');
 const Account = require('../models/Account');
 const router = express.Router();
+const Record = require('../models/Record')
 
 //Get all accounts
 router.get('/', async (req, res) => {
@@ -40,9 +41,23 @@ router.patch('/:id', async (req, res) => {
 //Delete an account
 router.delete('/:id', async (req, res) => {
     const account = await Account.findOne({where: {id: req.params.id}});
-
     if (!account) return res.status(404).json({error: 'Account not found'});
 
+    const accountRecords = await Record.findAll({
+        where: {
+            [require('sequelize').Op.or]: [
+                { accountId: req.params.id },
+                { toAccountId: req.params.id }
+            ]
+        }
+    });
+    
+    if (accountRecords > 0) {
+        for (const record of accountRecords) {
+            await record.destroy()
+        }
+    };
+    
     await account.destroy();
     res.json({message: 'Deleted account successfully'})
 });
