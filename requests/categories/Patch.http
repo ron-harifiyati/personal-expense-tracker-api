@@ -1,0 +1,8 @@
+PATCH http://localhost:3000/categories/eda25fb8-23e5-42e6-adf2-dacd12340a98
+Content-Type: application/json
+
+{
+    "title": "Salary",
+    "type": "income",
+    "imageTitle": "Something"
+}

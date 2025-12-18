@@ -4,7 +4,7 @@ Content-Type: application/json
 {
     "type": "income",
     "amountString": "10",
-    "toAccountId": "1198d07d-3302-4461-959a-f7e780205a8b",
-    "categoryId": "1015fc96-c4d1-47df-8468-6fbb280e0943",
+    "toAccountId": "257de1ac-b7bc-4415-a2be-d2d4beec976c",
+    "categoryId": "8c071d97-479c-4685-892d-7b5c0330dc89",
     "notes": "Trial"
 }

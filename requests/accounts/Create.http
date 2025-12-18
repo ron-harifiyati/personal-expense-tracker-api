@@ -2,7 +2,7 @@ POST http://localhost:3000/accounts
 Content-Type: application/json
 
 {
-    "title": "Savings",
-    "amount": 20,
+    "title": "Bank",
+    "amount": 150,
     "imageTitle": "money.png"
 }

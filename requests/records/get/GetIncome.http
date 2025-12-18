@@ -1,0 +1,2 @@
+GET http://localhost:3000/records/income
+Content-Type: application/json

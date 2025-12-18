@@ -1,0 +1,2 @@
+GET http://localhost:3000/records/expense
+Content-Type: application/json
