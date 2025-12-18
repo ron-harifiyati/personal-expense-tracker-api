@@ -2,6 +2,7 @@ const Account = require('../models/Account');
 const Category = require('../models/Category');
 const Record = require('../models/Record');
 
+// Convents string amount into a number
 const parseAmount = (amountString) => {
     const amount = parseFloat(amountString);
     if (isNaN(amount) || amount <= 0) {
@@ -10,7 +11,9 @@ const parseAmount = (amountString) => {
     return amount
 };
 
+// Class that creates a record
 class TransactionService {
+    // Create an expense record
     static async createExpense({ id, fromAccount, category, amountString, notes = "" }) {
         try {
             const amount = parseAmount(amountString);
@@ -25,17 +28,18 @@ class TransactionService {
                 categoryId: category.id
             });
 
-            return { success: true, message: 'Expense recorded and account updated', record }
+            return { message: 'Expense recorded and account updated' }
         } catch (error) {
-            return { success: false, error: error.message }
+            return { message: "An unexpected sever error occured" }
         }
     };
 
-    static async createIncome({ id, toAccount, category, amountString, notes = ""}) {
+    // Create an income record
+    static async createIncome({ id, toAccount, category, amountString, notes = "" }) {
         try {
             const amount = parseAmount(amountString);
             await toAccount.receive(amount);
-            
+
             const record = await Record.create({
                 id,
                 type: 'income',
@@ -45,13 +49,14 @@ class TransactionService {
                 categoryId: category.id
             });
 
-            return { success: true, message: 'Income recorded and account updated', record}
+            return { success: true, message: 'Income recorded and account updated' }
         } catch (error) {
             console.log(error)
-            return { success: false, error: error.message }
+            return { message: "An unexpected sever error occured" }
         }
     };
 
+    // Create an transfer record
     static async createTransfer({ id, fromAccount, toAccount, amountString, notes = "" }) {
         try {
             if (fromAccount.id === toAccount.id) {
@@ -70,21 +75,22 @@ class TransactionService {
                 toAccountId: toAccount.id
             });
 
-            return {success: true, message: 'Transfer recorded and accounts updated', record}
+            return { message: 'Transfer recorded and accounts updated', }
         } catch (error) {
-            return { success: false, error: error.message }
+            return { message: "An unexpected sever error occured" }
         }
     }
 
-    static async undo( id ) {
-        
+    // Revert the changes that were made by the record
+    static async reverseTransaction(id) {
+
         const record = await Record.findByPk(id);
-        if (!record) return { status: 404, success: false, error: 'Record not found' };
-        const oldFromAccount = await Account.findOne({ where: { id: record.accountId }});
-        const oldToAccount = await Account.findOne({ where: { id: record.toAccountId }});
-        
-        //Revert the changes that were made by the record
+        if (!record) return { status: 404, error: 'Record not found' };
+
         try {
+            const oldFromAccount = await Account.findOne({ where: { id: record.accountId } });
+            const oldToAccount = await Account.findOne({ where: { id: record.toAccountId } });
+
             switch (record.type.toLowerCase()) {
                 case 'income':
                     oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
@@ -104,53 +110,13 @@ class TransactionService {
                     break;
 
                 default: 'default'
-                    return { success: false, message: 'Invalid transaction type'}
+                    return { message: 'Invalid transaction type' }
             };
             await record.destroy();
-            return { success: true}
+            return { message: "Deleted old record" }
 
         } catch (error) {
-            return { success: false, error: error.message }
-        }
-    }
-
-    static async delete( id ) {
-        
-        const record = await Record.findByPk(id);
-        if (!record) return { status: 404, success: false, error: 'Record not found' };
-        const oldFromAccount = await Account.findOne({ where: { id: record.accountId }});
-        const oldToAccount = await Account.findOne({ where: { id: record.toAccountId }});
-        
-        //Revert the changes that were made by the record
-        try {
-            switch (record.type.toLowerCase()) {
-                case 'income':
-                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
-                    await oldToAccount.save();
-                    break;
-
-                case 'expense':
-                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
-                    await oldFromAccount.save();
-                    break;
-
-                case 'transfer':
-                    oldToAccount.amount = (parseFloat(oldToAccount.amount) - record.amount).toFixed(2);
-                    oldFromAccount.amount = (parseFloat(oldFromAccount.amount) + record.amount).toFixed(2);
-
-                    await Promise.all([oldFromAccount.save(), oldToAccount.save()])
-                    break;
-
-                default: 'default'
-                    return { success: false, message: 'Invalid transaction type'}
-            };
-
-            await record.destroy();
-            return { success: true}
-
-        } catch (error) {
-            console.log(error)
-            return { success: false, error: error.message }
+            return { message: "An unexpected sever error occured" }
         }
     }
 }
