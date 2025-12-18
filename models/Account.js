@@ -25,6 +25,7 @@ const Account = sequelize.define('Account', {
     },
     imageTitle: {
         type: DataTypes.STRING,
+        defaultValue: "",
         unique: false
     }
 });

@@ -19,7 +19,8 @@ const Category = sequelize.define('Category', {
         allowNull: false
     },
     imageTitle: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        default: ""
     }
 });
 
