@@ -1,0 +1,94 @@
+### Personal Expense Tracker API — REST Client sample requests
+### (VS Code "REST Client" extension). Run register/login first, then the
+### @token variable is reused by the protected requests below.
+
+@host = http://localhost:3000/api
+
+### Health
+GET {{host}}/health
+
+### Register (returns a token)
+# @name register
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Ron",
+  "email": "ron@example.com",
+  "password": "supersecret"
+}
+
+### Login (returns a token)
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ron@example.com",
+  "password": "supersecret"
+}
+
+@token = {{login.response.body.token}}
+
+### Current user
+GET {{host}}/auth/me
+Authorization: Bearer {{token}}
+
+### List accounts
+GET {{host}}/accounts
+Authorization: Bearer {{token}}
+
+### Create an account
+POST {{host}}/accounts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Mobile Money", "amount": 50, "icon": "phone", "color": "#10b981" }
+
+### List income categories
+GET {{host}}/categories?type=income
+Authorization: Bearer {{token}}
+
+### Record income (set toAccountId/categoryId from the lists above)
+POST {{host}}/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "type": "income", "amount": 2500, "toAccountId": "<account-id>", "categoryId": "<category-id>", "notes": "Salary" }
+
+### Record an expense
+POST {{host}}/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "type": "expense", "amount": 42.50, "fromAccountId": "<account-id>", "categoryId": "<category-id>", "notes": "Lunch" }
+
+### Transfer between accounts
+POST {{host}}/records
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "type": "transfer", "amount": 200, "fromAccountId": "<from-id>", "toAccountId": "<to-id>" }
+
+### List records (filtered + paginated)
+GET {{host}}/records?type=expense&page=1&limit=25&sort=date:desc
+Authorization: Bearer {{token}}
+
+### Create a budget
+POST {{host}}/budgets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "categoryId": "<expense-category-id>", "limit": 400, "period": "monthly" }
+
+### Analytics — dashboard summary
+GET {{host}}/analytics/summary
+Authorization: Bearer {{token}}
+
+### Analytics — spend by category
+GET {{host}}/analytics/by-category?type=expense
+Authorization: Bearer {{token}}
+
+### Analytics — monthly trend
+GET {{host}}/analytics/trend?months=6
+Authorization: Bearer {{token}}
