@@ -5,8 +5,11 @@ const { sequelize } = require('./src/models');
 async function start() {
     try {
         await sequelize.authenticate();
-        // `alter` keeps the schema in sync as models evolve during development.
-        await sequelize.sync({ alter: config.env === 'development' });
+        // Plain sync: creates tables/indexes if they don't exist. We avoid
+        // `alter` because SQLite rebuilds tables on ALTER and can corrupt the
+        // composite unique indexes across restarts. If you change a model,
+        // delete the sqlite file (dev) or add a migration.
+        await sequelize.sync();
         // eslint-disable-next-line no-console
         console.log('Database synced');
 
